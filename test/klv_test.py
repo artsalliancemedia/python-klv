@@ -3,7 +3,7 @@ Tests KLV functionality
 """
 
 import unittest
-from screener import klv
+import klv
 
 class TestKLV(unittest.TestCase):
     """
