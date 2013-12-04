@@ -68,7 +68,7 @@ class TestKLV(unittest.TestCase):
             value = list('these are little endian encoded Unicode characters'.encode('utf-16le'))
             k = klv.encode(key, value)
             self.assertEqual(k, key + [0x64] + value)
-            k = klv.encode(key, value, 4);
+            k = klv.encode(key, value, 4)
             self.assertEqual(k, key + [0x83, 0x00, 0x00, 0x64] + value)
 
     def test_decode_klv(self):
@@ -76,4 +76,24 @@ class TestKLV(unittest.TestCase):
                0xEE, 0x33, 0x00, 0x01, 0x02, 0x45, 0x6D, 0xDD]
         value = [0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00]
         k = key + [0x83, 0x00, 0x00, 0x07] + value
+        self.assertEqual(klv.decode(k, 16), (key, value,))
+
+    def test_encode_decode_klv(self):
+        key = [0x03, 0x2E, 0x5F, 0xAB, 0x08, 0x12, 0x2F, 0x0C, 0xEE,
+               0x33, 0x00, 0x01, 0x02, 0x45, 0x6D, 0xDD, 0x55, 0x96]
+        value = list('these are little endian encoded Unicode characters'.encode('utf-16le'))
+        k = klv.encode(key, value)
+        self.assertEqual(klv.decode(k, 18), (key, value,))
+
+    def test_decode_klv_no_value(self):
+        key = [0x03, 0x2E, 0x5F, 0xAB, 0x08, 0x12, 0x2F, 0x0C,
+               0xEE, 0x33, 0x00, 0x01, 0x02, 0x45, 0x6D, 0xDD]
+        k = key + [0x00]
+        self.assertEqual(klv.decode(k, 16), (key, [],))
+
+    def test_encode_decode_klv_no_value(self):
+        key = [0x03, 0x2E, 0x5F, 0xAB, 0x08, 0x12, 0x2F, 0x0C,
+               0xEE, 0x33, 0x00, 0x01, 0x02, 0x45, 0x6D, 0xDD]
+        value = []
+        k = klv.encode(key, value)
         self.assertEqual(klv.decode(k, 16), (key, value,))

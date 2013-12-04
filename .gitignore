@@ -1,2 +1,7 @@
-# Python
+# python
 *.pyc
+
+# setup.py
+dist/
+build/
+MANIFEST
