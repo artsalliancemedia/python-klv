@@ -2,6 +2,23 @@
 Key/Length/Value encoding and decoding
 """
 
+def convert_bytearray(func):
+    """
+    Decorator to convert the first parameter to a bytearray
+    """
+    def wrapped(ber, *args, **kwargs):
+        return func(bytearray(ber), *args, **kwargs)
+    return wrapped
+
+def return_bytearray(func):
+    """
+    Decorator to convert a function's returned value to a bytearray
+    """
+    def wrapped(*args, **kwargs):
+        return bytearray(func(*args, **kwargs))
+    return wrapped
+
+@convert_bytearray
 def decode_ber(ber):
     """
     Decodes an array of bytes to an integer value
@@ -20,6 +37,7 @@ def decode_ber(ber):
             length += ber[i] << (8 * (bytes_read - i - 1))
     return length, bytes_read
 
+@return_bytearray
 def encode_ber(value, ber_length=0):
     """
     Encodes an integer to BER
@@ -46,8 +64,9 @@ def encode(key, value, ber_length=0):
     """
     Encodes a key and value into a KLV
     """
-    return key + encode_ber(len(value), ber_length) + value
+    return bytearray(key) + encode_ber(len(value), ber_length) + bytearray(value)
 
+@convert_bytearray
 def decode(k, key_length):
     """
     Decodes a klv message
